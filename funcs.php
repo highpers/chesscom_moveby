@@ -150,8 +150,10 @@ function get_time_info(int $moveBy){
 
 }
 
-function get_games_to_report(int $hours, string $board, string $player){
+function get_games_to_report(int $hours_max, string $board, string $player , $rival){
 	
+	$result = array();
+
 	$data = @file_get_contents($board);
 
 	if ($data === FALSE) { // team name not found
@@ -169,11 +171,23 @@ function get_games_to_report(int $hours, string $board, string $player){
 
 			$colour = strpos($game->white,$player)?'white':'black';
 			if($colour == $game->turn){
+				$time_over = get_time_info($game->move_by);
+			
+				if($time_over['hours'] < $hours_max){
 				
+				 $record['TO_moment'] = $time_over['TO_moment'];
+				 $record['time_remaining'] = $time_over['hours'] . ':' . $time_over['minutes'] . ':' . $time_over['seconds'];
+				 $record['colour'] = $colour;
+				 $record['player'] = $player;
+				 $record['rival'] = $rival;
+					
+				$result[] = $record ;
+
+				}
 			}
 
 		}
-		
+		return $result;
 	}
 
 }

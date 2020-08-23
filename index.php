@@ -109,17 +109,23 @@ Nombre de jugador - Team Rival - Color - tiempo restante     
 
         //  if($id_match == 1144414 ) muestraArrayUobjeto($match_players , __FILE__ , __LINE__ , 1 , 0);
 
-
+          $records = array();
           foreach ($match_players as $player) {
 
             $games_to_report = get_games_to_report($hours_max, $player->board, $player->username, $rival);
+
+            if(count($games_to_report)){
+               foreach($games_to_report as $record){
+                  $records[] = $record ;
+               }   
+            }
 
             // $games = get_games_with_moveby($player->username , $team_label, $hours_max , $team_matches_ids , $rival); // player games (for this team) where he has to move in less than $ hours
           }
 
         }
 
-        muestraArrayUobjeto($games , __FILE__ , __LINE__ , 1 , 0);
+        muestraArrayUobjeto($records , __FILE__ , __LINE__ , 1 , 0);
 
       ?>
 
