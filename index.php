@@ -53,82 +53,54 @@
         <hr>
       </form>
 
-      <?php if (!empty($_POST)) {
+      <?php 
+      
+      if (!empty($_POST)) {
+        
         date_default_timezone_set('America/Argentina/Buenos_Aires');
         require('funcs.php');
 
-
-        /*
-   
-  https://api.chess.com/pub/club/club-atletico-independiente/matches
-   levanto matches in_progress (id de cada match)
-     para cada match: https://api.chess.com/pub/match/1096286 
-      lista de jugadores
-       para cada jugador
-         https://api.chess.com/pub/player/bolbochini/games     
-            partidas donde:
-                          move_by > 0  y menor de $_POST['hours']
-                          match in lista de matches in_progress
-            Armar array con:
-Nombre de jugador - Team Rival - Color - tiempo restante     
-  
-  */
-        $records = array(); // records to show in the report table
+       $records = array(); // records to show in the report table
 
 
-        $team_name = strtolower(htmlspecialchars($_POST['team'])); // team name for program search
-        $hours_max = ($_POST['hours'] == 0) ? 72 : $_POST['hours'];
-        $team_label = ucwords(str_replace('-', ' ', $team_name)); // team name to show
+       $team_name = strtolower(htmlspecialchars($_POST['team'])); // team name for program search
+       $hours_max = ($_POST['hours'] == 0) ? 72 : $_POST['hours'];
+       $team_label = ucwords(str_replace('-', ' ', $team_name)); // team name to show
 
         replace_accents($team_name); // this avoids "not found" result when user search for name that contains something like "Atlético"
 
         $team_matches = get_team_matches($team_name);
 
         if ($team_matches === false) {
-
-
           die('Team "' . $team_label . '" not found');
         } elseif ($team_matches === 0) {
-
           die('Team "' . $team_label . '" has no matches in progress');
         }
-        // muestraArrayUobjeto($team_matches , __FILE__ , __LINE__ , 1 , 1);
 
         $team_matches_ids = array();
 
         foreach ($team_matches as $match) {
 
-          // muestraArrayUobjeto($match , __FILE__ , __LINE__ , 1 , 0);
 
           $id_match = substr($match->id, strrpos($match->id, '/') + 1);
           $rival = ucwords(str_replace('-', ' ', substr($match->opponent, strrpos($match->opponent, '/') + 1)));
 
           $team_matches_ids[] = $id_match;
-          //   if ($id_match !== '1144414') continue;
           $match_players = get_match_players($id_match, $team_name);
 
 
-          //  muestraArrayUobjeto($match_players , __FILE__ , __LINE__ , 1 , 0);
 
 
           foreach ($match_players as $player) {
-            // muestraArrayUobjeto($player , __FILE__ , __LINE__ , 1 , 0);
-            // if ($player->username !== 'bolbochini') continue;
             $games_to_report = get_games_to_report($hours_max, $player->board, $player->username, $rival);
-
 
             if (count($games_to_report)) {
               foreach ($games_to_report as $record) {
                 $records[] = $record;
               }
             }
-            // $games = get_games_with_moveby($player->username , $team_label, $hours_max , $team_matches_ids , $rival); // player games (for this team) where he has to move in less than $ hours
           }
         }
-
-        muestraArrayUobjeto($records, __FILE__, __LINE__, 0, 0);
-
-
 
       ?>
 
@@ -139,12 +111,15 @@ Nombre de jugador - Team Rival - Color - tiempo restante     
           die('There are no games with less than ' . $hours_max . ' hours to move');
         }
 
+        $records_sorted = sort_list($records, 'time_remaining');
+
         $thead = $tfoot = ' <tr style="text-align:center;background:#999;color:white">
                     <th>Player</th>
                     <th>Opponent team</th>
                     <th>Colour</th>
                     <th>Time remaining</td>
                     <th>Time over on</th>
+                    <th>Watch game</th>
                   </tr>'
 
         ?>
@@ -164,14 +139,19 @@ Nombre de jugador - Team Rival - Color - tiempo restante     
                   </tfoot>
                   <tbody>
                     <?php
-                    foreach ($records as $record) {
-
-                      echo '<tr style="font-size:0.88em">';
-                      echo '<td>' . $record['player'] . '</td>';
-                      echo '<td>' . $record['rival'] . '</td>';
-                      echo '<td style="text-align:center">' . $record['colour'] . '</td>';
-                      echo '<td style="text-align:center">' . $record['time_remaining'] . '</td>';
-                      echo '<td style="text-align:center">' . $record['TO_moment'] . '</td>';
+                    $even_color = '#ececef';
+                    $bgcolor = $even_color;
+                    foreach ($records_sorted as $game) {
+                      
+                      $bgcolor = $bgcolor === $even_color ? 'white' : $even_color ;
+                      
+                      echo '<tr style="font-size:0.88em;background:'.$bgcolor.'">';
+                      echo '<td><span style="display:none">'. $game['time_remaining'].'</span>' .  $game['player']. '</td>';
+                      echo '<td>' . $game['rival'] . '</td>';
+                      echo '<td style="text-align:center">' . ucfirst($game['colour']) . '</td>';
+                      echo '<td style="text-align:center">' . $game['time_remaining']. '</td>';
+                      echo '<td style="text-align:center">' . $game['TO_moment'] . '</td>';
+                      echo '<td style="text-align:center"><a href="'.$game['url'].'" target="_blank"><img src="board.png" style="width:28px;" title="Watch game"></td>';
 
                       echo '</tr>';
                     }

@@ -37,8 +37,6 @@ function get_team_matches(string $team_name){
 		 }
        
 		
-		// if()
-
         if(count($matches->in_progress)){
             return $matches->in_progress;
         }else{ // team name found but 0 matches in progress
@@ -47,9 +45,7 @@ function get_team_matches(string $team_name){
        
     }    
 
-
 }
-
 
 
 function get_match_players(int $id_match , string $team){
@@ -80,7 +76,6 @@ function get_match_players(int $id_match , string $team){
 		}
 
 	   return $players_playing ;
-        
 
     }   
 }
@@ -117,7 +112,7 @@ function get_games_with_moveby(string $player, string $team, int $hours_max, arr
 			if(empty($game->match)){// the game doesn't belong to any match
 				continue;
 			} 
-			// echo '<br>'.$game->match.' move_by: '.$game->move_by;		
+			
 
 			if($game->move_by) { // it is player's turn
 
@@ -171,7 +166,7 @@ function get_time_info(int $moveBy){
 }
 
 function get_games_to_report(int $hours_max, string $board, string $player , $rival){
-	// die($board);
+
 	$result = array();
 
 	$data = curl_get_contents($board);
@@ -198,6 +193,7 @@ function get_games_to_report(int $hours_max, string $board, string $player , $ri
 				 $record['colour'] = $colour;
 				 $record['player'] = $player;
 				 $record['rival'] = $rival;
+				 $record['url'] = $game->url;
 				$result[] = $record ;
 
 				}
@@ -266,4 +262,15 @@ function muestraArrayUObjeto($obj, $arch = '', $linea = '', $die = 0, $conDump =
 
     if ($die)
         die();
+}
+
+function sort_list($list, $k_sort)
+{
+
+	usort($list, function ($a, $b) use ($k_sort) {
+
+		return strcmp($a[$k_sort], $b[$k_sort]);
+	});
+
+	return $list;
 }
