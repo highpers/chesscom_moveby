@@ -1,23 +1,44 @@
 <?php
 
+function curl_get_contents($url)
+{
+	// Initiate the curl session
+	$ch = curl_init();
+	// Set the URL
+	curl_setopt($ch, CURLOPT_URL, $url);
+	// Removes the headers from the output
+	curl_setopt($ch, CURLOPT_HEADER, 0);
+	// Return the output instead of displaying it directly
+	curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+	// Execute the curl session
+	$output = curl_exec($ch);
+	// Close the curl session
+	curl_close($ch);
+	// Return the output as a variable
 
+	return $output;
+}
 
     
 function get_team_matches(string $team_name){
 
     $team = str_replace(' ', '-', $team_name);
 
-    $data = @file_get_contents('https://api.chess.com/pub/club/' . $team . '/matches');
+	$data = curl_get_contents('https://api.chess.com/pub/club/' . $team . '/matches');
+	
+    if(empty($data)){ // team name not found
 
-    if($data === FALSE){ // team name not found
+		die('Error - file not found');
+    
+    }else{ 
+		$matches = json_decode(str_replace('@','',$data)) ;
+		 if(isset($matches->code) and $matches->code == 0){
+			 return false ;
+		 }
+       
+		
+		// if()
 
-        return false ;
-    
-    }else{
-    
-        $matches = json_decode(str_replace('@','',$data)) ;
-// muestraArrayUobjeto($matches , __FILE__ , __LINE__ , 1 , 0);
-        
         if(count($matches->in_progress)){
             return $matches->in_progress;
         }else{ // team name found but 0 matches in progress
@@ -33,7 +54,7 @@ function get_team_matches(string $team_name){
 
 function get_match_players(int $id_match , string $team){
 
-    $data = @file_get_contents('https://api.chess.com/pub/match/' . $id_match );
+    $data = curl_get_contents('https://api.chess.com/pub/match/' . $id_match );
 
 
     if ($data === FALSE) { // team name not found
@@ -79,7 +100,7 @@ function get_match_players(int $id_match , string $team){
 function get_games_with_moveby(string $player, string $team, int $hours_max, array $team_matches , $rival){
 
 
-	$data = @file_get_contents('https://api.chess.com/pub/player/'.$player.'/games');
+	$data = curl_get_contents('https://api.chess.com/pub/player/'.$player.'/games');
 
 
 	if ($data === FALSE) { // team name not found
@@ -120,7 +141,6 @@ function get_games_with_moveby(string $player, string $team, int $hours_max, arr
 					$record['player'] = $player ;
 					$record['rival'] = $rival ;
 				
-					// muestraArrayUobjeto($record , __FILE__ , __LINE__ , 1 , 0);
 					$record_list[] = $record ;
 
 				}
@@ -142,20 +162,20 @@ function get_time_info(int $moveBy){
 	$now = new DateTime(date('Y-m-d H:i:s'));
 	$oDiff = $time_over_moment->diff($now);
 	$result['hours'] = $oDiff->h + $oDiff->d * 24 ; // hours + days * 24
-	$result['minutes'] = $oDiff->i;
-	$result['seconds'] = $oDiff->s;
-	$result['TO_moment'] = date('d/m/Y H:i:s', $moveBy);
+	$result['minutes'] = str_pad($oDiff->i,2,'0',STR_PAD_LEFT);
+	$result['seconds'] = str_pad($oDiff->s,2,'0',STR_PAD_LEFT);
+	$result['TO_moment'] = date('M d H:i:s', $moveBy);
 	
 	return $result;
 
 }
 
 function get_games_to_report(int $hours_max, string $board, string $player , $rival){
-	
+	// die($board);
 	$result = array();
 
-	$data = @file_get_contents($board);
-
+	$data = curl_get_contents($board);
+	
 	if ($data === FALSE) { // team name not found
 
 		return false;
@@ -163,24 +183,21 @@ function get_games_to_report(int $hours_max, string $board, string $player , $ri
 	} else {
 
 		$board_info = json_decode($data);
-
 		foreach($board_info->games as $game ){
 			if(empty($game->move_by)){
 				continue;
 			}
-
 			$colour = strpos($game->white,$player)?'white':'black';
 			if($colour == $game->turn){
 				$time_over = get_time_info($game->move_by);
-			
+				
 				if($time_over['hours'] < $hours_max){
 				
 				 $record['TO_moment'] = $time_over['TO_moment'];
-				 $record['time_remaining'] = $time_over['hours'] . ':' . $time_over['minutes'] . ':' . $time_over['seconds'];
+				 $record['time_remaining'] = str_pad($time_over['hours'],2,'0',STR_PAD_LEFT) . ':' . $time_over['minutes'] . ':' . $time_over['seconds'];
 				 $record['colour'] = $colour;
 				 $record['player'] = $player;
 				 $record['rival'] = $rival;
-					
 				$result[] = $record ;
 
 				}
@@ -238,7 +255,6 @@ function replace_accents(&$str)
 
 function muestraArrayUObjeto($obj, $arch = '', $linea = '', $die = 0, $conDump = 0)
 {
-    ////muestraArrayUobjeto($band , __FILE__ , __LINE__ , 1 , 0);
 
     echo "En archivo $arch - linea $linea ";
     echo '<pre>';
