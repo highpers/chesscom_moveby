@@ -20,9 +20,7 @@ function curl_get_contents($url)
 }
 
     
-function get_team_matches(string $team_name){
-
-    $team = str_replace(' ', '-', $team_name);
+function get_team_matches(string $team){
 
 	$data = curl_get_contents('https://api.chess.com/pub/club/' . $team . '/matches');
 	
@@ -50,8 +48,13 @@ function get_team_matches(string $team_name){
 
 function get_match_players(int $id_match , string $team){
 
-    $data = curl_get_contents('https://api.chess.com/pub/match/' . $id_match );
+	// echo "<br>$team<br>$id_match";
+	
+	//if ($id_match == 1149152)	
+	//die($team . ' ' . __LINE__);
 
+	$data = curl_get_contents('https://api.chess.com/pub/match/' . $id_match );
+	
 
     if ($data === FALSE) { // team name not found
 
@@ -65,7 +68,6 @@ function get_match_players(int $id_match , string $team){
 
 		// take only players with game in progress
 		$players_playing = array();
-
 		foreach($match_data->teams->$team_num->players as $player){
 			if(empty($player->played_as_black) or empty($player->played_as_white)){
 				$players_playing[] = $player;

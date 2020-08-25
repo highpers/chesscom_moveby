@@ -9,7 +9,7 @@
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>SB Admin 2 - Tables</title>
+  <title>Chesscom team matches moveby</title>
 
   <!-- Custom fonts for this template -->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -67,8 +67,9 @@
        $hours_max = ($_POST['hours'] == 0) ? 72 : $_POST['hours'];
        $team_label = ucwords(str_replace('-', ' ', $team_name)); // team name to show
 
+        $team_name = str_replace(' ', '-', $team_name);
         replace_accents($team_name); // this avoids "not found" result when user search for name that contains something like "Atlético"
-
+  
         $team_matches = get_team_matches($team_name);
 
         if ($team_matches === false) {
@@ -77,18 +78,13 @@
           die('Team "' . $team_label . '" has no matches in progress');
         }
 
-        $team_matches_ids = array();
-
         foreach ($team_matches as $match) {
 
 
           $id_match = substr($match->id, strrpos($match->id, '/') + 1);
           $rival = ucwords(str_replace('-', ' ', substr($match->opponent, strrpos($match->opponent, '/') + 1)));
 
-          $team_matches_ids[] = $id_match;
           $match_players = get_match_players($id_match, $team_name);
-
-
 
 
           foreach ($match_players as $player) {
