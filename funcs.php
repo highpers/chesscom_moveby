@@ -116,7 +116,7 @@ function get_games_with_moveby(string $player, string $team, int $hours_max, arr
 			} 
 			
 
-			if($game->move_by) { // it is player's turn
+			if($game->move_by) { // it is player's turn and
 
 				// find out if this match is team's
 				$id_match = substr($game->match, strrpos($game->match, '/') + 1);
@@ -167,7 +167,7 @@ function get_time_info(int $moveBy){
 
 }
 
-function get_games_to_report(int $hours_max, string $board, string $player , $rival){
+function get_games_to_report(int $hours_max, string $board, string $player , $rival , $status){
 
 	$result = array();
 
@@ -194,6 +194,7 @@ function get_games_to_report(int $hours_max, string $board, string $player , $ri
 				 $record['time_remaining'] = str_pad($time_over['hours'],2,'0',STR_PAD_LEFT) . ':' . $time_over['minutes'] . ':' . $time_over['seconds'];
 				 $record['colour'] = $colour;
 				 $record['player'] = $player;
+				 $record['status'] = $status; 
 				 $record['rival'] = $rival;
 				 $record['url'] = $game->url;
 				$result[] = $record ;

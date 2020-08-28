@@ -88,7 +88,7 @@
 
 
           foreach ($match_players as $player) {
-            $games_to_report = get_games_to_report($hours_max, $player->board, $player->username, $rival);
+            $games_to_report = get_games_to_report($hours_max, $player->board, $player->username, $rival, $player->status);
 
             if (count($games_to_report)) {
               foreach ($games_to_report as $record) {
@@ -111,6 +111,7 @@
 
         $thead = $tfoot = ' <tr style="text-align:center;background:#999;color:white">
                     <th>Player</th>
+                    <th>User type</th>
                     <th>Opponent team</th>
                     <th>Colour</th>
                     <th>Time remaining</td>
@@ -143,6 +144,7 @@
                       
                       echo '<tr style="font-size:0.88em;background:'.$bgcolor.'">';
                       echo '<td><span style="display:none">'. $game['time_remaining'].'</span>' .  $game['player']. '</td>';
+                      echo '<td>' . ucfirst($game['status']) . '</td>';
                       echo '<td>' . $game['rival'] . '</td>';
                       echo '<td style="text-align:center">' . ucfirst($game['colour']) . '</td>';
                       echo '<td style="text-align:center">' . $game['time_remaining']. '</td>';
