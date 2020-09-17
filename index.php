@@ -42,7 +42,7 @@
 
     <!-- Begin Page Content -->
     <div class="container-fluid" style="margin-top:28px">
-<h5>Chess.com - Move by report</h5><hr>st
+<h5>Chess.com - Move by report</h5><hr>
       <form method="post">
 
         <input required type="text" class="form-control" id="team" name="team" placeholder="Team name" style="width:393px">
@@ -185,7 +185,7 @@
   <a class="scroll-to-top rounded" href="#page-top">
     <i class="fas fa-angle-up"></i>
   </a>
-  <p class="mb-4" style="font-size:0.7em;margin:12px">DataTables is a third party plugin that is used to generate the demo table below. For more information about DataTables, please visit the <a target="_blank" href="https://datatables.net">official DataTables documentation</a>.</p>
+
 <?php  } ?>
 
 
