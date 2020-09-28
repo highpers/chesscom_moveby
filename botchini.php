@@ -1,19 +1,7 @@
 <?php
 date_default_timezone_set('America/Argentina/Buenos_Aires');
 
-/* const.php - included in git ignore
-
-<?php 
-
-    define('TOKEN', '2329131983189xxxx' ;
-
-    $destinatarios = array( 
-                            'user1' => '654535352',
-                            'user2' => '6322354535352',
-                        );
-
-*/
-require('const.php');
+require('config.php');
 require('funcs.php');
 
 
