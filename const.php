@@ -1,10 +1,7 @@
 <?php
-define('TOKEN', '1346689560:AAGiVffdddw6uxrwSGqoh6Z5gZc6eik-OqeRK38q8 -- está mal ver en telegram');
-define('HORAS', '13');
+define('TOKEN', '1341749560:AAGiV63ywSGqoh6Z5gZc6eik-OqeRK38q8');
+define('HORAS', '15');
 define('TEAM' , 'club-atletico-independiente');
+define('ID_CANAL' , '-1001389hhr44962671');
 
-
-$destinatarios = array(
-    'pkisi' => '27649fdf35413 -- está mal ver en telegram',
-);
 

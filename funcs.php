@@ -203,6 +203,8 @@ function get_games_to_report(int $hours_max, string $board, string $player , $ri
 			}
 
 		}
+		// muestraArrayUobjeto($result , __FILE__ , __LINE__ , 0 , 1);
+		// echo'<h3>Count: '.count($result).'</h3>';
 		return $result;
 	}
 

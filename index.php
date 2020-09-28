@@ -89,8 +89,7 @@
 
           foreach ($match_players as $player) {
             $games_to_report = get_games_to_report($hours_max, $player->board, $player->username, $rival, $player->status);
-
-            if (count($games_to_report)) {
+            if (!empty($games_to_report)) {
               foreach ($games_to_report as $record) {
                 $records[] = $record;
               }
